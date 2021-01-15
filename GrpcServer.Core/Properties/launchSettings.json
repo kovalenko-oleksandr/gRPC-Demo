@@ -1,0 +1,13 @@
+﻿{
+  "profiles": {
+    "GrpcServer.Core": {
+      "commandName": "Project",
+      "launchBrowser": false,
+      //"applicationUrl": "https://localhost:5001",
+      "applicationUrl": "http://localhost:5001", // Works if net framework grpc client is using Insecure channel
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

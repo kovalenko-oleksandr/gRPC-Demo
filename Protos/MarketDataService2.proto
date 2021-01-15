@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option csharp_namespace = "Grpc.Contracts";
+
+package GrpcMarketData;
+
+// The MarketData service definition.
+service MarketData {
+    // Requests single quote
+    rpc GetQuote(CurrencyPair) returns (Quote);
+    rpc GetQuotes (CurrencyPair) returns (stream Quote);
+}
+
+message CurrencyPair {
+    string from = 1;
+    string to = 2;
+}
+
+// The request message containing the user's name.
+message Quote {
+    double bid = 1;
+    double ask = 2;
+}
