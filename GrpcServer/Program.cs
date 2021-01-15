@@ -40,6 +40,8 @@ namespace GrpcService.ServerApp
             }
         }
 
+        #region Stream RPC
+
         public override async Task GetQuotes(CurrencyPair ccyPair, IServerStreamWriter<Quote> quotesStream, ServerCallContext context)
         {
             const string nof = nameof(GetQuotes);
@@ -67,6 +69,8 @@ namespace GrpcService.ServerApp
                 Console.WriteLine($"{nof} failed. {e}");
             }
         }
+
+        #endregion
     }
 
     class Program

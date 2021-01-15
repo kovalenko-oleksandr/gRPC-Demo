@@ -18,16 +18,15 @@ namespace GrpcClient
         {
             //TODO: Configure channel:
             //https://github.com/grpc/grpc/blob/master/doc/keepalive.md
-            //Channel channel = new Channel("XTP-UAT-1-EQT.corp.dsarena.com", 30051, ChannelCredentials.Insecure);
-            Channel channel = new Channel("localhost", 30051, ChannelCredentials.Insecure);
-
+            //Channel channel = new Channel("<UAT SERVER HERE>", 30051, ChannelCredentials.Insecure);
             //Works with http port on AspNetCore grpc server
             //var channel = new Channel("localhost", 5001, ChannelCredentials.Insecure);
 
+            Channel channel = new Channel("localhost", 30051, ChannelCredentials.Insecure);
             var client = new MarketData.MarketDataClient(channel);
 
-            //await SimpleCall(client, 10);
-            await SimpleCallWithDeadline(client);
+            await SimpleCall(client, 10);
+            //wait SimpleCallWithDeadline(client);
 
             //var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
             //await StreamCallWithCts(client, cts.Token);
@@ -70,7 +69,7 @@ namespace GrpcClient
         {
             try
             {
-                var quote = await client.GetQuoteAsync(new CurrencyPair {From = "USD", To = "ZAR"}, deadline: DateTime.UtcNow.AddMilliseconds(200));
+                var quote = await client.GetQuoteAsync(new CurrencyPair {From = "USD", To = "ZAR"}, deadline: DateTime.UtcNow.AddMilliseconds(500));
             }
             catch (RpcException ex) when (ex.StatusCode == StatusCode.DeadlineExceeded)
             {
