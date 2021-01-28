@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Grpc.Contracts;
+using Grpc.Core.Logging;
 
 namespace GrpcClient
 {
@@ -16,13 +17,23 @@ namespace GrpcClient
     {
         public static async Task Main(string[] args)
         {
+            //Environment.SetEnvironmentVariable("GRPC_TRACE", "all");
+            Environment.SetEnvironmentVariable("GRPC_VERBOSITY", "debug");
+            GrpcEnvironment.SetLogger(new ConsoleLogger());
+
             //TODO: Configure channel:
             //https://github.com/grpc/grpc/blob/master/doc/keepalive.md
+            //Channel channel = new Channel("localhost", 30051, ChannelCredentials.Insecure);
             //Channel channel = new Channel("<UAT SERVER HERE>", 30051, ChannelCredentials.Insecure);
             //Works with http port on AspNetCore grpc server
             //var channel = new Channel("localhost", 5001, ChannelCredentials.Insecure);
 
-            Channel channel = new Channel("localhost", 30051, ChannelCredentials.Insecure);
+            //https://stackoverflow.com/questions/37714558/how-to-enable-server-side-ssl-for-grpc
+            var cacert = File.ReadAllText(@"C:\Users\ABOK078\Desktop\gRPC presentation\Grpc-Demo\cert\ca.crt");
+            var clientcert = File.ReadAllText(@"C:\Users\ABOK078\Desktop\gRPC presentation\Grpc-Demo\cert\client.crt");
+            var clientkey = File.ReadAllText(@"C:\Users\ABOK078\Desktop\gRPC presentation\Grpc-Demo\cert\client.key");
+            var credentials = new SslCredentials(cacert, new KeyCertificatePair(clientcert, clientkey));
+            Channel channel = new Channel("localhost", 30051, credentials);
             var client = new MarketData.MarketDataClient(channel);
 
             await SimpleCall(client, 10);

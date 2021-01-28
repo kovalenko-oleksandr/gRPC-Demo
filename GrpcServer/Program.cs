@@ -1,7 +1,9 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Grpc.Contracts;
 using Grpc.Core;
+using Grpc.Core.Logging;
 
 namespace GrpcService.ServerApp
 {
@@ -79,10 +81,23 @@ namespace GrpcService.ServerApp
 
         public static void Main(string[] args)
         {
+            //Environment.SetEnvironmentVariable("GRPC_TRACE", "all");
+            Environment.SetEnvironmentVariable("GRPC_VERBOSITY", "debug");
+            GrpcEnvironment.SetLogger(new ConsoleLogger());
+
+            //https://stackoverflow.com/questions/37714558/how-to-enable-server-side-ssl-for-grpc
+            var cacert = File.ReadAllText(@"C:\Users\ABOK078\Desktop\gRPC presentation\Grpc-Demo\cert\ca.crt");
+            var servercert = File.ReadAllText(@"C:\Users\ABOK078\Desktop\gRPC presentation\Grpc-Demo\cert\server.crt");
+            var serverkey = File.ReadAllText(@"C:\Users\ABOK078\Desktop\gRPC presentation\Grpc-Demo\cert\server.key");
+            var keypair = new KeyCertificatePair(servercert, serverkey);
+
+            var credentials = new SslServerCredentials(new[] { keypair }, cacert, true);
+
             Server server = new Server
             {
                 Services = { MarketData.BindService(new RandomMarketDataService()) },
-                Ports = { new ServerPort("0.0.0.0", Port, ServerCredentials.Insecure) }
+                //Ports = { new ServerPort("0.0.0.0", Port, ServerCredentials.Insecure) }
+                Ports = { new ServerPort("0.0.0.0", Port, credentials) }
             };
             server.Start();
 
